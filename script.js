@@ -182,6 +182,65 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
+    /**
+     * Refreshes the comments displayed in the modal for the current invoice.
+     * @param {string} invoiceId - The ID of the invoice to display comments for.
+     */
+    function refreshCommentsInModal(invoiceId) {
+        const invoiceData = allInvoicesData[invoiceId];
+        const comments = invoiceData && invoiceData.comment && Array.isArray(invoiceData.comment) ? invoiceData.comment : [];
+        existingCommentsDiv.innerHTML = ''; // Clear existing comments
+
+        if (comments.length === 0) {
+            existingCommentsDiv.innerHTML = '<p class="text-gray-500">No comments yet.</p>';
+        } else {
+            comments.forEach((comment, index) => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'comment-item bg-white p-3 rounded-md shadow mb-2 flex justify-between items-center';
+                commentElement.innerHTML = `
+                    <p class="text-sm text-gray-800 flex-grow">${comment}</p>
+                    <div class="flex space-x-2 ml-4">
+                        <button class="edit-comment-btn text-blue-500 hover:text-blue-700" data-index="${index}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            <span class="sr-only">Edit</span>
+                        </button>
+                        <button class="delete-comment-btn text-red-500 hover:text-red-700" data-index="${index}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="sr-only">Delete</span>
+                        </button>
+                    </div>
+                `;
+                existingCommentsDiv.appendChild(commentElement);
+            });
+
+            // Add event listeners for edit and delete buttons on existing comments
+            existingCommentsDiv.querySelectorAll('.edit-comment-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    editingCommentIndex = parseInt(e.currentTarget.dataset.index, 10);
+                    const commentToEdit = comments[editingCommentIndex];
+                    commentTextarea.value = commentToEdit;
+                    commentModalSaveBtn.classList.add('hidden');
+                    commentModalSaveEditBtn.classList.remove('hidden');
+                    commentModalCancelEditBtn.classList.remove('hidden');
+                });
+            });
+
+            existingCommentsDiv.querySelectorAll('.delete-comment-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const commentIndexToDelete = parseInt(e.currentTarget.dataset.index, 10);
+                    const newComments = comments.filter((_, i) => i !== commentIndexToDelete);
+                    await updateInvoiceField(currentEditingInvoiceId, 'comment', newComments);
+                    refreshCommentsInModal(currentEditingInvoiceId); // Refresh the modal after deletion
+                });
+            });
+        }
+    }
+
     /**
      * Filters the invoices based on the current filter criteria.
      */
@@ -202,12 +261,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Filter by exact Date
             if (matches && currentDateFilter && invoiceDate !== currentDateFilter) {
                 matches = false;
+                console.log('entre al filtro de año', invoiceDate, currentYearFilter);
             }
 
             // Filter by Year
             if (matches && currentYearFilter && invoiceDate && new Date(invoiceDate).getFullYear().toString() !== currentYearFilter) {
                 matches = false;
-                console.log('entre al filtro de año', invoiceDate, currentYearFilter);
             }
 
             // Filter by Month
@@ -376,7 +435,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <thead class="bg-gray-200">
                         <tr>
                             ${headers.map(header => `
-                                <th class="py-3 px-4 border border-gray-300 text-center text-sm font-semibold text-gray-700">
+                                <th class="py-3 px-4 border border-gray-300 text-center text-sm font-semibold text-gray-700 ${header === 'comment' ? 'comment-header' : ''}">
                                     ${header.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                                 </th>
                             `).join('')}
@@ -401,10 +460,10 @@ document.addEventListener('DOMContentLoaded', () => {
             );
 
             if (firstTotalColumnIndex > 0) {
-                totalRowCells += `<td class="py-3 px-4 border border-gray-300 text-left text-base font-bold text-blue-800" colspan="${firstTotalColumnIndex}">${storeName}</td>`;
+                totalRowCells += `<td class="py-3 px-4 border-2 border-blue-500 text-left text-base font-bold text-blue-800" colspan="${firstTotalColumnIndex}">${storeName}</td>`;
                 currentColumn += firstTotalColumnIndex;
             } else {
-                totalRowCells += `<td class="py-3 px-4 border border-gray-300 text-left text-base font-bold text-blue-800">${storeName}</td>`;
+                totalRowCells += `<td class="py-3 px-4 border-2 border-blue-500 text-left text-base font-bold text-blue-800">${storeName}</td>`;
                 currentColumn++;
             }
 
@@ -438,7 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const isPaid = invoice[headerKey] === true || invoice[headerKey] === 'true';
                         cellContent = `
                             <input type="checkbox"
-                                   class="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                                   class="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500 focus:border-blue-500"
                                    data-invoice-id="${invoice.id}"
                                    data-field="paid"
                                    ${isPaid ? 'checked' : ''}>
@@ -446,11 +505,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else if (headerKey === 'comment') {
                         const comments = invoice[headerKey] !== undefined && Array.isArray(invoice[headerKey]) ? invoice[headerKey] : [];
                         const commentsString = JSON.stringify(comments);
-
                         const iconColorClass = comments.length > 0 ? 'text-blue-600 hover:text-blue-800' : 'text-gray-400 hover:text-gray-600';
                         cellContent = `
-                            <span class="comment-edit-icon cursor-pointer ${iconColorClass} transition-colors duration-200"
-                                  data-invoice-id="${invoice.id}">
+                            <span class="comment-edit-icon ${iconColorClass} cursor-pointer transition-colors duration-200"
+                                  data-invoice-id="${invoice.id}"
+                                  data-current-comment='${commentsString}'>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block align-middle" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.336-3.118A7.944 7.944 0 012 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9H7v2h2V9z" clip-rule="evenodd" />
                                 </svg>
@@ -524,9 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             ${tableHtml}
         `;
-
         
-
         // Re-attach event listeners after re-rendering the table
         document.querySelectorAll('input[type="checkbox"][data-invoice-id]').forEach(checkbox => {
             checkbox.addEventListener('change', (event) => {
@@ -541,7 +598,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentEditingInvoiceId = event.currentTarget.dataset.invoiceId;
                 refreshCommentsInModal(currentEditingInvoiceId);
                 commentTextarea.value = '';
-                // Ensure a user is not in editing mode when opening the modal
                 commentModalSaveBtn.classList.remove('hidden');
                 commentModalSaveEditBtn.classList.add('hidden');
                 commentModalCancelEditBtn.classList.add('hidden');
@@ -549,7 +605,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 commentModalOverlay.classList.remove('hidden');
             });
         });
-
+        
         // Add event listeners for filters
         // --- NEW: Update the global filters object on change and then filter ---
         document.getElementById('filter-store').addEventListener('change', (event) => {
@@ -576,158 +632,60 @@ document.addEventListener('DOMContentLoaded', () => {
         populateStoreFilter(currentFilters.store);
         populateDateFilters(currentFilters.year, currentFilters.month);
     }
-    
-    // --- NEW FUNCTION: Refreshes the comment list inside the modal ---
-    function refreshCommentsInModal(invoiceId) {
-        const invoiceData = allInvoicesData[invoiceId];
-        const comments = invoiceData && Array.isArray(invoiceData.comment) ? invoiceData.comment : [];
-        const sortedComments = comments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-        existingCommentsDiv.innerHTML = sortedComments.length > 0 ?
-            sortedComments.map((c, index) => `
-                <div class="border-b border-gray-200 last:border-b-0 py-2 flex justify-between items-start">
-                    <div>
-                        <p class="text-xs text-gray-500">${new Date(c.timestamp).toLocaleString()}</p>
-                        <p>${c.text}</p>
-                    </div>
-                    <div class="flex space-x-2 mt-1">
-                        <button class="edit-comment-btn text-blue-500 hover:text-blue-700 text-xs px-2 py-1 rounded transition-colors duration-200" data-comment-index="${index}">Edit</button>
-                        <button class="delete-comment-btn text-red-500 hover:text-red-700 text-xs px-2 py-1 rounded transition-colors duration-200" data-comment-index="${index}">Delete</button>
-                    </div>
-                </div>
-            `).join('') :
-            '<p class="text-gray-500">No comments yet.</p>';
-    }
-    // --- END NEW FUNCTION ---
-
-    // --- NEW FUNCTION: Handles all comment updates and refreshes the UI without closing the modal ---
-    async function handleCommentUpdate(invoiceId, updatedComments) {
-        await updateInvoiceField(invoiceId, 'comment', updatedComments);
-        // After successfully updating the field, just refresh the comment list inside the modal and the main table
-        refreshCommentsInModal(invoiceId);
-        filterInvoices();
-    }
-    // --- END NEW FUNCTION ---
-
-
-    existingCommentsDiv.addEventListener('click', (event) => {
-        if (event.target.classList.contains('delete-comment-btn')) {
-            const commentIndex = parseInt(event.target.dataset.commentIndex, 10);
-            if (currentEditingInvoiceId !== null && !isNaN(commentIndex)) {
-                // Get the current comments and remove the one at the specified index
-                const currentComments = [...(allInvoicesData[currentEditingInvoiceId]?.comment || [])];
-                if (currentComments.length > commentIndex) {
-                    if (confirm('Are you sure you want to delete this comment?')) { // Confirmation dialog
-                        currentComments.splice(commentIndex, 1);
-                        // Call the new centralized function
-                        handleCommentUpdate(currentEditingInvoiceId, currentComments);
-                    }
-                }
-            }
-        }
-        if (event.target.classList.contains('edit-comment-btn')) {
-            const commentIndex = parseInt(event.target.dataset.commentIndex, 10);
-            if (currentEditingInvoiceId !== null && !isNaN(commentIndex)) {
-                const currentComments = allInvoicesData[currentEditingInvoiceId]?.comment || [];
-                const commentToEdit = currentComments[commentIndex];
-                if (commentToEdit) {
-                    commentTextarea.value = commentToEdit.text;
-                    editingCommentIndex = commentIndex;
-
-                    // Toggle button visibility for editing mode
-                    commentModalSaveBtn.classList.add('hidden');
-                    commentModalSaveEditBtn.classList.remove('hidden');
-                    commentModalCancelEditBtn.classList.remove('hidden');
-                }
-            }
-        }
-    });
-
-    // Event listeners for the comment modal
+    // Modal Event Listeners
     commentModalCloseBtn.addEventListener('click', () => {
         commentModalOverlay.classList.add('hidden');
     });
 
-    /**
-     * @description This is the core logic for saving a new comment.
-     * It's triggered when the "Save Comment" button is clicked.
-     */
-    commentModalSaveBtn.addEventListener('click', () => {
-        if (currentEditingInvoiceId) {
-            const newCommentText = commentTextarea.value.trim();
-            if (newCommentText) {
-                const invoiceData = allInvoicesData[currentEditingInvoiceId];
-                let existingComments = invoiceData && Array.isArray(invoiceData.comment) ? invoiceData.comment : [];
-
-                const newComment = {
-                    text: newCommentText,
-                    timestamp: new Date().toISOString()
-                };
-
-                const updatedComments = [...existingComments, newComment];
-                // Call the new centralized function
-                handleCommentUpdate(currentEditingInvoiceId, updatedComments);
-                commentTextarea.value = ''; // Clear the textarea after saving
-            } else {
-                showStatusMessage('Comment cannot be empty.', 'error');
-            }
+    commentModalSaveBtn.addEventListener('click', async () => {
+        const newComment = commentTextarea.value.trim();
+        if (newComment) {
+            const invoiceData = allInvoicesData[currentEditingInvoiceId];
+            const currentComments = invoiceData.comment && Array.isArray(invoiceData.comment) ? invoiceData.comment : [];
+            const updatedComments = [...currentComments, newComment];
+            await updateInvoiceField(currentEditingInvoiceId, 'comment', updatedComments);
+            commentTextarea.value = ''; // Clear the textarea
+            refreshCommentsInModal(currentEditingInvoiceId); // Refresh the comments list
         }
     });
-    // Event listener for saving an edited comment
-    commentModalSaveEditBtn.addEventListener('click', () => {
-        if (currentEditingInvoiceId !== null && editingCommentIndex !== null) {
-            const editedCommentText = commentTextarea.value.trim();
-            if (editedCommentText) {
-                const updatedComments = [...(allInvoicesData[currentEditingInvoiceId]?.comment || [])];
-                if (updatedComments[editingCommentIndex]) {
-                    updatedComments[editingCommentIndex].text = editedCommentText;
-                    // Call the new centralized function
-                    handleCommentUpdate(currentEditingInvoiceId, updatedComments);
 
-                    // Reset modal to original state
-                    commentModalSaveBtn.classList.remove('hidden');
-                    commentModalSaveEditBtn.classList.add('hidden');
-                    commentModalCancelEditBtn.classList.add('hidden');
-                    editingCommentIndex = null;
-                    commentTextarea.value = '';
-                }
-            } else {
-                showStatusMessage('Comment cannot be empty.', 'error');
-            }
+    commentModalSaveEditBtn.addEventListener('click', async () => {
+        const updatedCommentText = commentTextarea.value.trim();
+        if (updatedCommentText && editingCommentIndex !== null) {
+            const invoiceData = allInvoicesData[currentEditingInvoiceId];
+            const currentComments = invoiceData.comment && Array.isArray(invoiceData.comment) ? invoiceData.comment : [];
+            const updatedComments = [...currentComments];
+            updatedComments[editingCommentIndex] = updatedCommentText;
+            await updateInvoiceField(currentEditingInvoiceId, 'comment', updatedComments);
+            commentTextarea.value = '';
+            commentModalSaveBtn.classList.remove('hidden');
+            commentModalSaveEditBtn.classList.add('hidden');
+            commentModalCancelEditBtn.classList.add('hidden');
+            editingCommentIndex = null;
+            refreshCommentsInModal(currentEditingInvoiceId);
         }
     });
-    // Event listener for canceling an edit
+
     commentModalCancelEditBtn.addEventListener('click', () => {
-        // Reset modal to original state
+        commentTextarea.value = '';
         commentModalSaveBtn.classList.remove('hidden');
         commentModalSaveEditBtn.classList.add('hidden');
         commentModalCancelEditBtn.classList.add('hidden');
         editingCommentIndex = null;
-        commentTextarea.value = '';
     });
 
-    commentModalOverlay.addEventListener('click', (event) => {
-        if (event.target === commentModalOverlay) {
-            commentModalOverlay.classList.add('hidden');
+    
+    // Initial fetch and table render
+    (async () => {
+        const data = await fetchDataWithRetry(`${firebaseBaseUrl}.json`);
+        if (data && Object.keys(data).length > 0) {
+            allInvoicesData = data;
+            filterInvoices(); // Render initial table with filters
+        } else if (data && Object.keys(data).length === 0) {
+            dataContainer.innerHTML = `<p class="text-gray-600 text-center text-lg">No invoice data found in the database.</p>`;
+        } else {
+            dataContainer.innerHTML = `<p class="error-message text-center">Failed to load invoice data. Please verify the Firebase URL and your internet connection.</p>`;
         }
-    });
-
-    // Initial fetch and render
-    fetchDataWithRetry(`${firebaseBaseUrl}.json`)
-        .then((data) => {
-            if (data && Object.keys(data).length > 0) {
-                allInvoicesData = data;
-                // --- NEW: Use the global filters for the initial render ---
-                renderInvoiceTable(allInvoicesData, currentFilters);
-            } else if (data && Object.keys(data).length === 0) {
-                dataContainer.innerHTML = `<p class="text-gray-600 text-center text-lg">No invoice data found in the database.</p>`;
-            } else {
-                dataContainer.innerHTML = `<p class="error-message text-center">Failed to load invoice data. Please verify the Firebase URL and your internet connection.</p>`;
-            }
-            filterInvoices()
-        })
-        .catch(error => {
-            dataContainer.innerHTML = `<p class="error-message text-center">An unexpected error occurred while fetching data: ${error.message}</p>`;
-            console.error('Critical error during data fetching process:', error);
-        });
+    })();
 });

@@ -74,21 +74,36 @@ h1 {
         padding: 5px; /* Further reduced padding for mobile */
     }
     .container {
-        padding: 10px; /* Further reduced padding for mobile */
+        padding: 5px; /* Reduced container padding */
     }
     h1 {
         font-size: 1.5rem; /* Smaller font for mobile */
         margin-bottom: 1rem;
     }
     .grid {
-        display: block; /* Stack filters vertically */
+        display: grid; /* Keep grid layout */
+        grid-template-columns: repeat(2, 1fr); /* Two columns for filters */
+        gap: 0.25rem; /* Reduced gap */
     }
     .grid > div {
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem; /* Reduced margin between divs */
     }
     .filter-btn {
         width: 100%;
         margin-top: 0.5rem;
+    }
+    /* Styles to make the filter section smaller on small screens */
+    .p-4 {
+        padding: 0.25rem; /* Reduced padding */
+    }
+    .gap-4 {
+        gap: 0.25rem; /* Reduced gap between filter elements */
+    }
+    /* Make filter inputs and selects smaller */
+    .p-4 select,
+    .p-4 input[type="date"] {
+        padding: 0.25rem 0.5rem; /* Reduced padding for input/select elements */
+        font-size: 0.875rem; /* Smaller font size */
     }
     /* Styles to make the table itself mobile-friendly */
     .min-w-full {
@@ -102,7 +117,16 @@ h1 {
         padding: 6px; /* Reduced table cell padding for mobile */
         font-size: 0.875rem; /* Smaller font size */
     }
-    /* Hide some columns on mobile to reduce clutter and rely on horizontal scroll */
+    /* Restore the table header background for small screens */
+    thead {
+        background-color: #e5e7eb !important;
+    }
+    /* Hide the comment header on smaller screens */
+    .comment-header {
+        visibility: hidden;
+        padding: 0;
+        width: 0;
+    }
     .table th:nth-child(3),
     .table td:nth-child(3) {
         display: none;
