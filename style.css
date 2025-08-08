@@ -6,12 +6,12 @@ body {
     justify-content: center;
     align-items: flex-start; /* Align to the top */
     min-height: 100vh; /* Full viewport height */
-    padding: 20px;
+    padding: 10px; /* Reduced default padding */
     box-sizing: border-box;
 }
 .container {
     background-color: #ffffff; /* White background for the content area */
-    padding: 24px;
+    padding: 16px; /* Reduced default padding */
     border-radius: 12px; /* More rounded corners */
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     width: 100%; /* Default to full width for all devices */
@@ -71,10 +71,10 @@ h1 {
 /* Responsive table-specific CSS to ensure readability on smaller screens */
 @media (max-width: 768px) {
     body {
-        padding: 10px;
+        padding: 5px; /* Further reduced padding for mobile */
     }
     .container {
-        padding: 16px;
+        padding: 10px; /* Further reduced padding for mobile */
     }
     h1 {
         font-size: 1.5rem; /* Smaller font for mobile */
@@ -99,7 +99,7 @@ h1 {
         width: 100%;
     }
     .table th, .table td {
-        padding: 8px; /* Less padding */
+        padding: 6px; /* Reduced table cell padding for mobile */
         font-size: 0.875rem; /* Smaller font size */
     }
     /* Hide some columns on mobile to reduce clutter and rely on horizontal scroll */
