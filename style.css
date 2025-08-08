@@ -13,24 +13,98 @@ body {
     background-color: #ffffff; /* White background for the content area */
     padding: 24px;
     border-radius: 12px; /* More rounded corners */
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    max-width: 800px; /* Max width for readability */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    width: 100%; /* Default to full width for all devices */
+    max-width: 1200px; /* Max width to prevent content from stretching too wide on large screens */
+    margin: 0 auto;
+}
+/* Style the main header */
+h1 {
+    font-size: 2.25rem; /* 36px */
+    line-height: 2.5rem; /* 40px */
+    font-weight: 700;
+    color: #1f2937; /* Dark gray */
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+/* Table container for overflow on small screens */
+.overflow-x-auto {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+}
+/* General table styling */
+.min-w-full {
+    min-width: 100%;
+}
+.table {
     width: 100%;
-    margin-top: 50px; /* Space from the top */
+    border-collapse: collapse;
 }
-pre {
-    background-color: #e5e7eb; /* Lighter gray for code block */
-    padding: 16px;
-    border-radius: 8px;
-    overflow-x: auto; /* Allow horizontal scrolling for long lines */
-    white-space: pre-wrap; /* Wrap long lines */
-    word-break: break-all; /* Break words if necessary */
+.table th, .table td {
+    padding: 12px 16px;
+    border: 1px solid #e5e7eb; /* Light gray border */
+    text-align: left;
 }
-.error-message {
-    color: #dc2626; /* Red color for error messages */
-    font-weight: bold;
+.table th {
+    background-color: #f3f4f6;
+    font-weight: 600;
+    color: #4b5563;
 }
-.loading-message {
-    color: #4b5563; /* Gray color for loading message */
-    font-style: italic;
+.table tbody tr:hover {
+    background-color: #f9fafb;
+}
+/* Responsive adjustments for the filter section */
+.grid-cols-1, .md\:grid-cols-2, .lg\:grid-cols-4 {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+@media (min-width: 768px) {
+    .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+@media (min-width: 1024px) {
+    .lg\:grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+/* Responsive table-specific CSS to ensure readability on smaller screens */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    .container {
+        padding: 16px;
+    }
+    h1 {
+        font-size: 1.5rem; /* Smaller font for mobile */
+        margin-bottom: 1rem;
+    }
+    .grid {
+        display: block; /* Stack filters vertically */
+    }
+    .grid > div {
+        margin-bottom: 1rem;
+    }
+    .filter-btn {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    /* Styles to make the table itself mobile-friendly */
+    .min-w-full {
+        width: 100%;
+        min-width: unset;
+    }
+    .table-auto {
+        width: 100%;
+    }
+    .table th, .table td {
+        padding: 8px; /* Less padding */
+        font-size: 0.875rem; /* Smaller font size */
+    }
+    /* Hide some columns on mobile to reduce clutter and rely on horizontal scroll */
+    .table th:nth-child(3),
+    .table td:nth-child(3) {
+        display: none;
+    }
 }
