@@ -636,7 +636,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 let tableHtml = '';
                 tableHtml += `
                     <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+                         <table class="min-w-full divide-y divide-gray-200" id="invoices-table">
+                        // <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
                             <thead class="bg-gray-200">
                                 <tr>
                                     ${headers.map(header => `

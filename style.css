@@ -63,3 +63,8 @@ pre {
     }
 }
 
+/* style.css */
+
+body, html {
+    overflow-x: hidden;
+}
