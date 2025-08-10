@@ -3,20 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Firebase Invoice Data Reader</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <title>Invoice Manager</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <div class="container">
-        <h1>Invoice Data Reader</h1>
-        <div id="data-container" class="mt-4">
+<body class="bg-gray-100 p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-extrabold text-center mb-6 text-gray-800">Invoice Manager</h1>
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex space-x-2">
+               
+                <label class="flex items-center space-x-2 text-gray-700" id="admin-toggle-container">
+                    <input type="checkbox" id="admin-toggle" class="form-checkbox h-5 w-5 text-blue-600 rounded">
+                    <span>Admin Mode</span>
+                </label>
+                 <!-- Updated button text to "Add New Account" -->
+                <button id="create-user-btn" class="hidden px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200">
+                    Add New Account
+                </button>
             </div>
+            <button id="logout-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200">Logout</button>
+        </div>
+        <div id="data-container">
+            <!-- This is where your invoice data will be rendered -->
+        </div>
     </div>
     
-    <script src="script.js"></script>
+    <!-- Modal for creating new users (hidden by default) -->
+    <div id="create-user-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 text-center mb-4">Create New User Account</h3>
+            <div id="modal-status-message" class="hidden p-3 mb-4 text-sm rounded-lg text-center"></div>
+            <form id="create-user-form" class="space-y-4">
+                <div>
+                    <label for="new-user-email" class="block text-sm font-medium text-gray-700">Email address</label>
+                    <input type="email" id="new-user-email" required
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="new-user-password" class="block text-sm font-medium text-gray-700">Password</label>
+                    <input type="password" id="new-user-password" required
+                           class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div class="flex justify-end space-x-2">
+                    <button type="button" id="close-modal-btn" class="py-2 px-4 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                        Cancel
+                    </button>
+                    <button type="submit" class="py-2 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none">
+                        Create Account
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
+    <script type="module" src="./firebaseConfig.js"></script>
+    <script type="module" src="./ui.js"></script>
+
+     <script src="script.js"></script> 
+    <script type="module" src="script.js"></script> -->
+
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script> 
+    <script type="module" src="./firebaseConfig.js"></script>
+    <script type="module" src="./script.js"></script> 
+
 </body>
 </html>
