@@ -53,3 +53,13 @@ pre {
 .status-message {
   transition: opacity 0.3s ease;
 }
+
+/* style.css */
+
+/* Add these styles to the bottom of your file */
+@media (max-width: 640px) {
+    .comment-header, .comment-cell {
+        display: none;
+    }
+}
+

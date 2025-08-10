@@ -640,7 +640,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <thead class="bg-gray-200">
                                 <tr>
                                     ${headers.map(header => `
-                                        <th class="py-3 px-4 border border-gray-300 text-center text-sm font-semibold text-gray-700">
+                                        <th class="py-3 px-4 border border-gray-300 text-center text-sm font-semibold text-gray-700 ${header === 'comment' ? 'comment-header' : ''}">
                                         
                                         ${header === 'comment' ? '' : 
                                             header === 'delete' ? '' : 
