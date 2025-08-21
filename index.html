@@ -7,33 +7,28 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gray-100 p-1">
-<!-- <body class="bg-gray-100 flex items-center justify-center min-h-screen md:p-8"> -->
-    <!-- <body class="bg-gray-100 flex items-center justify-center min-h-screen p-4 md:p-8"></body> -->
+<body class="bg-gray-100 p-2 sm:p-4">
     <div >
         <h1 class="text-3xl font-extrabold text-center mb-6 text-gray-800">Invoice Manager</h1>
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4">
             <div class="flex space-x-2">
                
                 <label class="flex items-center space-x-2 text-gray-700" id="admin-toggle-container">
                     <input type="checkbox" id="admin-toggle" class="form-checkbox h-5 w-5 text-blue-600 rounded">
                     <span>Admin Mode</span>
                 </label>
-                 <!-- Updated button text to "Add New Account" -->
                 <button id="create-user-btn" class="hidden px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200">
                     Add New Account
                 </button>
             </div>
             <button id="logout-btn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors duration-200">Logout</button>
         </div>
-        <div id="data-container">
-            <!-- This is where your invoice data will be rendered -->
+        <div id="data-container" >
         </div>
     </div>
     
-    <!-- Modal for creating new users (hidden by default) -->
     <div id="create-user-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
-        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
             <h3 class="text-lg leading-6 font-medium text-gray-900 text-center mb-4">Create New User Account</h3>
             <div id="modal-status-message" class="hidden p-3 mb-4 text-sm rounded-lg text-center"></div>
             <form id="create-user-form" class="space-y-4">
@@ -58,17 +53,6 @@
             </form>
         </div>
     </div>
-
-    <!-- <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    
-    <script type="module" src="./firebaseConfig.js"></script>
-    <script type="module" src="./ui.js"></script>
-
-     <script src="script.js"></script> 
-    <script type="module" src="script.js"></script> -->
-
 
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>

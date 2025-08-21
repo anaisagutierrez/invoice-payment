@@ -1,25 +1,3 @@
-// 櫨 Your web app's Firebase configuration
-// const firebaseConfig = {
-//     apiKey: "AIzaSyB1LCgmA9eb1tNsmdmQTuHPhRKhet4RaWM",
-//     authDomain: "language-entry.firebaseapp.com",
-//     projectId: "language-entry",
-//     storageBucket: "language-entry.firebasestorage.app",
-//     messagingSenderId: "72772945167",
-//     appId: "1:72772945167:web:3a6f9d2c3e2083952daa7a"
-// };
-
-
-// // Check if a Firebase app is already initialized
-// if (!firebase.apps.length) {
-//     firebase.initializeApp(firebaseConfig);
-// }
-// const auth = firebase.auth();
-// const db = firebase.firestore();
-
-// export { auth, db };
-
-// script.js
-
 // Import auth and db from firebaseConfig.js
 import { auth, db } from './firebaseConfig.js';
 
@@ -30,7 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (user) {
             // User is signed in. The rest of your application logic goes here.
             // Check for admin status based on email
-            // const isAdminEmail = 'anaisagutierrez@gmail.com'; // 泊 Change this to your admin email
+            // const isAdminEmail = 'anaisagutierrez@gmail.com'; 
+            // Change this to your admin email
             // const isAdmin = user.email === isAdminEmail;
 
             const adminEmails = ['anaisagutierrez@gmail.com', 'eacordero173@gmail.com']; // Change this to your admin emails
@@ -50,24 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Set the isAdmin flag globally for the rest of the script
             window.isAdmin = isAdmin;
             
-            // 櫨 The rest of your original script.js code from the previous turn starts here
             
-            // Dynamically add a style block to remove default page margins and padding
-            // const style = document.createElement('style');
-            // style.textContent = `
-            //     html, body {
-            //         margin: 0;
-            //         padding: 0;
-            //         box-sizing: border-box;
-            //         width: 100%;
-            //         height: 100%;
-            //     }
-            //     *, *::before, *::after {
-            //         box-sizing: inherit;
-            //     }
-            // `;
-            // document.head.appendChild(style);
-
             // Set the page title
             document.title = 'Invoice Manager';
 
@@ -112,9 +74,8 @@ document.addEventListener('DOMContentLoaded', () => {
             let currentEditingInvoiceId = null; // To keep track of which invoice's comment is being edited
             let editingCommentIndex = null; // New variable to store the index of the comment being edited
             let allInvoicesData = {}; // Store the original fetched data
-            // Removed isAdmin = adminToggle.checked; from here as it is now set by Firebase auth.onAuthStateChanged
-            
-            // --- NEW: Global state object for filters ---
+             
+           
             const currentYear = new Date().getFullYear().toString();
             let currentFilters = {
                 store: '',
@@ -192,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         });
 
-                        await Promise.all(correctionPromises); // Wait for all corrections to be saved to Firebase
+                        await Promise.all(correctionPromises);
 
                         return data;
 
@@ -209,18 +170,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
 
-            /**
-             * Updates a specific field for an invoice in Firebase.
-             * @param {string} invoiceId - The ID of the invoice to update.
-             * @param {string} fieldName - The name of the field to update (e.g., 'paid', 'comment').
-             * @param {*} value - The new value for the field.
-             */
+           
             async function updateInvoiceField(invoiceId, fieldName, value) {
-                // NEW: Check if the user is an admin before allowing updates on specific fields.
                 const editableFields = ['store', 'date', 'invoiceNumber', 'amount', 'gst'];
                 if (editableFields.includes(fieldName) && !window.isAdmin) {
                     showStatusMessage('Permission denied. Only admins can edit these fields.', 'error');
-                    // Revert the change on the UI
                     const element = document.querySelector(`[data-invoice-id="${invoiceId}"][data-field="${fieldName}"]`);
                     if (element) {
                         element.value = allInvoicesData[invoiceId][fieldName];
@@ -281,24 +235,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             
-            /**
-             * Creates a new, blank invoice record in Firebase.
-             */
             async function createNewInvoice() {
-                if (!window.isAdmin) { // NEW: Admin check for this function
+                if (!window.isAdmin) { 
                     showStatusMessage('Permission denied. Only admins can create new invoices.', 'error');
                     return;
                 }
 
                 showStatusMessage('Creating new invoice...', 'info');
                 const newInvoiceData = {
-                    date: new Date().toISOString().slice(0, 10), // Current date
+                    date: new Date().toISOString().slice(0, 10), 
                     store: '',
                     amount: 0.00,
                     gst: 0.00,
                     paid: false,
                     comment: [],
-                    invoiceNumber: 'NEW-' + Date.now() // Unique placeholder number
+                    invoiceNumber: 'NEW-' + Date.now() 
                 };
                 const url = `${firebaseBaseUrl}.json`;
                 try {
@@ -420,22 +371,19 @@ document.addEventListener('DOMContentLoaded', () => {
                             const commentIndexToDelete = parseInt(e.currentTarget.dataset.index, 10);
                             const newComments = comments.filter((_, i) => i !== commentIndexToDelete);
                             await updateInvoiceField(currentEditingInvoiceId, 'comment', newComments);
-                            refreshCommentsInModal(currentEditingInvoiceId); // Refresh the modal after deletion
+                            refreshCommentsInModal(currentEditingInvoiceId); 
                         });
                     });
                 }
             }
 
-            /**
-             * Filters the invoices based on the current filter criteria.
-             */
+           
             async function filterInvoices() {
 
                 const invoices = await fetchDataWithRetry(firebaseBaseUrl + '.json');
                 if (invoices) {
                      allInvoicesData = invoices; // Update the global data store
 
-                        // --- NEW: Use the global currentFilters object instead of reading from the DOM ---
                         const { store: currentStoreFilter, date: currentDateFilter, year: currentYearFilter, month: currentMonthFilter } = currentFilters;
 
                         const filteredData = {};
@@ -478,18 +426,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
             }
 
-            /**
-             * Clears all filter selections and displays all invoices.
-             */
+            
             function clearFilters() {
-                // --- NEW: Reset the global currentFilters object ---
                 currentFilters = {
                     store: '',
                     date: '',
                     year: '',
                     month: ''
                 };
-                filterInvoices(); // Re-filter to display all data
+                filterInvoices();                                        
             }
 
             /**
@@ -547,10 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            /**
-             * Populates the store filter dropdown.
-             * @param {string} selectedStore - The store to pre-select.
-             */
+           
             function populateStoreFilter(selectedStore = '') {
                 const stores = new Set();
                 Object.values(allInvoicesData).forEach(invoiceDetails => {
@@ -637,7 +579,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 tableHtml += `
                     <div class="overflow-x-auto">
                          <table class="min-w-full divide-y divide-gray-200" id="invoices-table">
-                        // <table class="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
                             <thead class="bg-gray-200">
                                 <tr>
                                     ${headers.map(header => `
@@ -1036,7 +977,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })();
 
-            // 櫨 Your original script.js code ends here.
             
         } else {
             // User is not signed in, redirect to login page

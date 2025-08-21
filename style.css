@@ -68,3 +68,10 @@ pre {
 body, html {
     overflow-x: hidden;
 }
+
+/* Add this to the end of your file */
+@media (max-width: 640px) {
+  select {
+    width: 50%;
+  }
+}
