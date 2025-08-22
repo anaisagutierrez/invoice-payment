@@ -173,6 +173,15 @@ document.addEventListener('DOMContentLoaded', () => {
            
             async function updateInvoiceField(invoiceId, fieldName, value) {
                 const editableFields = ['store', 'date', 'invoiceNumber', 'amount', 'gst'];
+                // const editableFields = [];
+                // if (window.isAdmin) {
+                //     editableFields = ['store', 'date', 'invoiceNumber', 'amount', 'gst'];
+                // } else {
+                //     editableFields = [ 'date', 'invoiceNumber', 'amount', 'gst'];
+                // }
+
+
+
                 if (editableFields.includes(fieldName) && !window.isAdmin) {
                     showStatusMessage('Permission denied. Only admins can edit these fields.', 'error');
                     const element = document.querySelector(`[data-invoice-id="${invoiceId}"][data-field="${fieldName}"]`);
@@ -380,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
            
             async function filterInvoices() {
 
-                const invoices = await fetchDataWithRetry(firebaseBaseUrl + '.json');
+                const invoices = await fetchDataWithRetry( firebaseBaseUrl + '.json' );
                 if (invoices) {
                      allInvoicesData = invoices; // Update the global data store
 
@@ -413,18 +422,47 @@ document.addEventListener('DOMContentLoaded', () => {
                                     matches = false;
                                 }
                             }
+                            //  // Filter by Paid Status
+                            // if (matches && currentFilters.paid !== undefined) {
+                            //     if (invoiceDetails.paid !== currentFilters.paid) {
+                            //         matches = false;
+                            //     }
+                            // }
 
                             if (matches) {
                                 filteredData[invoiceId] = invoiceDetails;
                             }
                         });
+
+                        // // REPLACE THE OLD SORTING CODE BELOW WITH THE NEW CODE ⭐
+                        // const sortedInvoices = Object.entries(filteredData).sort(([idA, invoiceA], [idB, invoiceB]) => {
+                        // // 1. Sort by paid status (unpaid first)
+                        // if (invoiceA.paid === false && invoiceB.paid === true) {
+                        //     return -1;
+                        // }
+                        // if (invoiceA.paid === true && invoiceB.paid === false) {
+                        //     return 1;
+                        // }
+                                    
+                        //     // 2. If paid status is the same, sort by date ascending
+                        //     const dateA = new Date(invoiceA.date);
+                        //     const dateB = new Date(invoiceB.date);
+                        //     return dateA - dateB;
+                        // });
+
+
                         // Pass the global filter values to renderInvoiceTable
                         renderInvoiceTable(filteredData, currentFilters);
+                        //  renderInvoiceTable(Object.fromEntries(sortedInvoices), currentFilters);
+
+                        
 
                     }else {
                         showStatusMessage('Could not fetch invoices.', 'error');
                     }
             }
+
+      
 
             
             function clearFilters() {
@@ -552,10 +590,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Define a desired order for specific keys
                 let desiredOrderForColumns = [ 'date', 'invoiceNumber','amount', 'gst', 'paid','comment'];
-                
-                let headers = [];
+               let headers = [];
 
-                const internalInvoiceIdKeysToExclude = ['store','id'];
+                const internalInvoiceIdKeysToExclude = ['id','store'];
 
                 desiredOrderForColumns.forEach(key => {
                     
@@ -573,6 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Check if the user is an admin and add the 'Delete' header
                 if (window.isAdmin) {
                     headers.push('delete');
+                    headers.push('store');
                 }
 
                 let tableHtml = '';
@@ -584,7 +622,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                     ${headers.map(header => `
                                         <th class="py-3 px-4 border border-gray-300 text-center text-sm font-semibold text-gray-700 ${header === 'comment' ? 'comment-header' : ''}">
                                         
-                                        ${header === 'comment' ? '' : 
+                                        ${ 
+                                            header === 'store' ? '' : 
+                                            header === 'comment' ? '' : 
                                             header === 'delete' ? '' : 
                                             header === 'invoiceNumber' ? 'Invoice' : 
                                                 header.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
@@ -1003,12 +1043,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // will work with the existing variable.
 
     
-    if (adminToggle) {
-        adminToggle.addEventListener('change', () => {
-            window.isAdmin = adminToggle.checked;
-            filterInvoices(); // Re-render the table with the new admin state
-        });
-    }
+    // if (adminToggle) {
+    //     adminToggle.addEventListener('change', () => {
+    //         window.isAdmin = adminToggle.checked;
+    //         filterInvoices(); // Re-render the table with the new admin state
+    //     });
+    // }
 
 
 });
