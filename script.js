@@ -589,7 +589,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 allKeys.add('id');
 
                 // Define a desired order for specific keys
-            let desiredOrderForColumns = [ 'date', 'invoiceNumber','amount', 'gst', 'paid','comment'];
+               let desiredOrderForColumns = [ 'date', 'invoiceNumber','amount', 'gst', 'paid','comment'];
                let headers = [];
 
                 const internalInvoiceIdKeysToExclude = ['id','store'];
@@ -598,6 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     if (allKeys.has(key) && !internalInvoiceIdKeysToExclude.includes(key)) {
                         headers.push(key);
+                        
                     }
                     allKeys.delete(key);
                 });
@@ -606,6 +607,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     .filter(key => !internalInvoiceIdKeysToExclude.includes(key))
                     .sort()
                     .forEach(key => headers.push(key));
+
+                headers.push('comment');
 
                 // Check if the user is an admin and add the 'Delete' header
                 if (window.isAdmin) {
@@ -677,6 +680,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                     <tr class="hover:bg-gray-100 transition-colors duration-200">
                         `;
                         headers.forEach(headerKey => {
+
+                            // console.log('headerKey', headers);
                             let cellContent;
                             if (headerKey === 'paid') {
                                 const isPaid = invoice[headerKey] === true || invoice[headerKey] === 'true';
