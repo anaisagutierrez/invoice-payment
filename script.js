@@ -589,10 +589,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 allKeys.add('id');
 
                 // Define a desired order for specific keys
-               let desiredOrderForColumns = [ 'date', 'invoiceNumber','amount', 'gst', 'paid','comment'];
+               let desiredOrderForColumns = [ 'date', 'invoiceNumber','amount',  'paid','comment'];
                let headers = [];
 
-                const internalInvoiceIdKeysToExclude = ['id','store'];
+                const internalInvoiceIdKeysToExclude = ['id','store','gst'];
 
                 desiredOrderForColumns.forEach(key => {
                     
