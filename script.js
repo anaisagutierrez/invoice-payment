@@ -576,6 +576,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Sort the invoices within each store group by date in descending order
                 Object.keys(groupedData).forEach(storeName => {
                     groupedData[storeName].invoices.sort((a, b) => {
+                        // Unpaid invoices (paid: false) come first
+                        if (a.paid === false && b.paid === true) {
+                            return -1;
+                        }
+                        if (a.paid === true && b.paid === false) {
+                            return 1;
+                        }
+                        // If paid status is the same, sort by date descending
                         const dateA = a.date ? new Date(a.date) : 0;
                         const dateB = b.date ? new Date(b.date) : 0;
                         return dateB - dateA; // Sort descending
@@ -735,11 +743,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             else if (headerKey === 'amount') {
                                 const value = invoice[headerKey] !== undefined ? invoice[headerKey] : '0.00';
                                 cellContent = `
+                                <div class="flex items-center justify-center">
+                                    <span class="mr-1 text-gray-700"></span>
                                     <input type="number" step="0.01" value="${value}"
                                         data-invoice-id="${invoice.id}"
                                         data-field="amount"
                                         class="editable-input w-full bg-transparent border-none focus:outline-none focus:ring-1 focus:ring-blue-500 text-center">
-                                `;
+                                 </div>`;
                             }
                             else if (headerKey === 'gst') {
                                 const value = invoice[headerKey] !== undefined ? invoice[headerKey] : '0.00';
